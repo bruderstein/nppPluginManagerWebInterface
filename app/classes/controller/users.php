@@ -50,7 +50,7 @@ class Controller_Users extends Controller{
 			$user = new Model_User();
 			
 			try{
-				$user->create_user($this->request->post(), array('username', 'password', 'email'));
+				$user->create_user($this->request->post(), array('username', 'password', 'email', 'plugins'));
 				
 				$user->authorisation_token = $this->generate_auth_token();
 				
@@ -146,7 +146,37 @@ The Admin System.
 	
 	
 	// TO HERE!
-	
+	public function action_reject(){
+		if($this->admin !== true){
+			$this->request->redirect('users/login?from=users/authorise');
+		}
+		
+		$this->body = new View('users/authorise');
+		
+		$session = Session::instance();
+		
+		if($username = $session->get_once('user_authorise_username', FALSE)){
+			$this->body->rejected = $username;
+		}
+		
+		if($this->request->method() === Request::POST && Security::check($this->request->post('token')) === true){
+			$user = ORM::factory('user')->where('username', '=', $this->request->post('username'))->find();
+			if ($user->loaded()){
+				$user->rejected = 1;
+				
+				$user->save();
+				
+				$session->set('user_authorise_username', $user->username)
+						->write();
+			}
+			
+			$this->request->redirect('users/authorise'); // This means that we don't break the back button
+			
+		} else {
+			$this->body->users = ORM::factory('user')->not_verified()->find_all();
+		}
+		
+	}
 	
 	public function action_authorise(){
 		if($this->admin !== true){

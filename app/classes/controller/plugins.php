@@ -5,7 +5,7 @@ class Controller_Plugins extends Controller{
 	public function before(){
 		parent::before();
 		
-		if($this->logged_in !== true){
+		if($this->logged_in !== true && $this->request->action() != "generate_xml") {
 			$this->request->redirect('users/login', 401);
 		}
 	}
@@ -787,6 +787,9 @@ class Controller_Plugins extends Controller{
 			
 			$model->validate = $childElem['validate'] == 'true' ? 1 : 0;
 			$model->backup = $childElem['backup'] == 'true' ? 1 : 0;
+			$model->replace = $childElem['replace'] == 'true' ? 1 : 0;
+			$model->recursive = $childElem['recursive'] == 'true' ? 1 : 0;
+			$model->isgpup = $childElem['isGpup'] == 'true' ? 1 : 0;
 		}elseif($childName == 'delete'){
 			$model = new Model_Steps_Delete();
 			
@@ -874,6 +877,11 @@ class Controller_Plugins extends Controller{
 			if($plugin->description){
 				$pluginX->addChild('description', HTML::chars(str_replace("\n", '\n', $plugin->description)));
 			}
+			
+			if($plugin->library){
+				$pluginX->addChild('isLibrary', 'true');
+			}
+
 			if($plugin->author){
 				$pluginX->addChild('author', HTML::chars($plugin->author));
 			}
@@ -925,7 +933,7 @@ class Controller_Plugins extends Controller{
 				$steps = $plugin->unicode_uninstall_steps();
 				
 				if(count($steps) > 0){
-					$uninstallX = $pluginX->addChild('uninstall');
+					$uninstallX = $pluginX->addChild('remove');
 					
 					$unicodeX = $uninstallX->addChild('unicode');
 					
@@ -942,7 +950,7 @@ class Controller_Plugins extends Controller{
 				
 				if(count($steps) > 0){
 					if(isset($uninstallX) === false){
-						$uninstallX = $pluginX->addChild('uninstall');
+						$uninstallX = $pluginX->addChild('remove');
 					}
 					
 					$ansiX = $uninstallX->addChild('ansi');
@@ -1075,12 +1083,22 @@ class Controller_Plugins extends Controller{
 				if($step->backup){
 					$copyX['backup'] = 'true';
 				}
+				if($step->replace){
+					$copyX['replace'] = 'true';
+				}
+				if($step->isgpup){
+					$copyX['isGpup'] = 'true';
+				}
+				if($step->recursive){
+					$copyX['recursive'] = 'true';
+				}
+
 			}elseif($step->url !== null){
 				$downloadX = $xml->addChild('download', HTML::chars($step->url));
 			}elseif($step->run !== null){
 				$runX = $xml->addChild('run');
 				
-				$runX['run'] = $step->run;
+				$runX['file'] = $step->run;
 				$runX['arguments'] = $step->arguments;
 				$runX['outsideNpp'] = $step->outside;
 			}else{

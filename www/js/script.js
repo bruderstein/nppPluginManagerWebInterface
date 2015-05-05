@@ -419,7 +419,9 @@ function nameFormElements(prefix, $steps){
 			$item.find('.i_validate').attr('name', name+'validate]');
 			$item.find('.i_backup').attr('name', name+'backup]');
 			$item.find('.i_directory').attr('name', name+'is_dir]');
-			
+		        $item.find('.i_replace').attr('name', name+'replace]');
+		        $item.find('.i_recursive').attr('name', name+'recursive]');
+			$item.find('.i_isgpup').attr('name', name+'isgpup]');	
 			$item.append(
 				$('<input type="hidden" name="'+name+'variable]" class="temp" />').val($item.find('.variable').text())
 			);

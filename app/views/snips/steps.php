@@ -17,6 +17,10 @@
 		<label for="backup_<?php echo $key ?>">Backup</label>
 		<?php echo Form::checkbox(null, 1, (bool) $step->is_dir, array('id'=>'directory_'.$key, 'class'=>'i_directory')) ?>
 		<label for="directory_<?php echo $key ?>">Directory</label>
+		<?php echo Form::checkbox(null, 1, (bool) $step->recursive, array('id'=>'recursive_'.$key, 'class'=>'i_recursive')) ?>
+		<label for="recursive_<?php echo $key ?>">recursive</label>
+                <?php echo Form::hidden('replace_'.$key, (bool) $step->replace, array('id'=>'replace_'.$key, 'class'=>'i_replace')) ?>
+		<?php echo Form::hidden('isGpup_'.$key, (bool) $step->isgpup, array('id'=>'isgpup_'.$key, 'class'=>'i_isgpup')) ?>
 	</div>
 <?php elseif($step->url !== null): ?>
 <div class="download">

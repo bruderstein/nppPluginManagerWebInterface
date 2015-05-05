@@ -22,6 +22,7 @@ class Model_User extends Model_Auth_User{
 					->where('roles_users.role_id', '=', '1');
 					
 		return $this->where('verified', '=', '1')
+                            ->where('rejected', '=', '0')
 					->where(NULL, 'not exists', $qry_login);
 	}
 	

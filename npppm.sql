@@ -101,6 +101,8 @@ CREATE TABLE `steps_copies` (
   `validate` tinyint(1) unsigned NOT NULL,
   `backup` tinyint(1) unsigned NOT NULL,
   `is_dir` tinyint(1) unsigned NOT NULL,
+  `replace` tinyint(1) unsigned NOT NULL,
+  `isgpup` tinyint(1) unsigned NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
