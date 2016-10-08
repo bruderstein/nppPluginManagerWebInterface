@@ -5,7 +5,7 @@ class Controller_Plugins extends Controller{
 	public function before(){
 		parent::before();
 		
-		if($this->logged_in !== true && $this->request->action() != "generate_xml") {
+		if($this->logged_in !== true && $this->request->action() != "generate_xml" && $this->request->action() != 'generate_validate_json') {
 			$this->request->redirect('users/login', 401);
 		}
 	}
@@ -1061,6 +1061,67 @@ class Controller_Plugins extends Controller{
 			echo $sql;
 		}
 		
+		exit;
+	}
+
+	public function action_generate_validate_json(){
+		Session::instance()->write();
+
+		$this->response->headers('Content-Type', 'text/json');
+
+		if($this->request->query('download')){
+			$this->response->headers('Content-Disposition', 'attachment; filename="validate.json"');
+		}
+
+		$hashes = ORM::factory('Validhash')->find_all();
+		$prepend = Kohana::find_file('config', 'files_table', 'sql');
+
+		$validate = '';
+
+		$validate .= "{\r\n";
+
+		$first = true;
+
+		foreach($hashes as $hash){
+
+			if ($hash->hash) {
+
+				if (!$first) {
+					$validate .= ",\r\n";
+				}
+				$first = false;
+				$validate .= '"' . $hash->hash . '": "' . $hash->response . '"';
+			}
+		}
+
+
+
+		$validate .= "}\r\n";
+
+		// @see http://www.php.net/manual/en/function.gzdeflate.php#69046
+
+		if(Request::accept_encoding('gzip') == true){
+			$this->response->headers('Content-Encoding', 'gzip');
+			$this->response->send_headers();
+
+			ob_end_flush();
+
+			echo gzencode($validate, 9);
+		}elseif(Request::accept_encoding('deflate') == true){
+			$this->response->headers('Content-Encoding', 'deflate');
+			$this->response->send_headers();
+
+			ob_end_flush();
+
+			echo gzcompress($validate, 9);
+		}else{
+			$this->response->send_headers();
+
+			ob_end_flush();
+
+			echo $validate;
+		}
+
 		exit;
 	}
 	
