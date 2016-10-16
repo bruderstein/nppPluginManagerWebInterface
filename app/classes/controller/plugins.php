@@ -110,6 +110,7 @@ class Controller_Plugins extends Controller{
 					}
 					
 					Db::query(null, 'COMMIT');
+                    self::plugin_updated($plugin->name);
 				}catch(Exception $e){
 					Db::query(null, 'ROLLBACK');
 					throw $e;
@@ -254,6 +255,7 @@ class Controller_Plugins extends Controller{
 					}
 					
 					Db::query(null, 'COMMIT');
+                    self::plugin_updated($plugin->name);
 				}catch(Exception $e){
 					Db::query(null, 'ROLLBACK');
 					throw $e;
@@ -308,6 +310,7 @@ class Controller_Plugins extends Controller{
 		$plugin->delete();
 		
 		$this->request->redirect('plugins');
+        self::plugin_updated($plugin->name);
 	}
 	
 	public function action_view(){
@@ -368,6 +371,7 @@ class Controller_Plugins extends Controller{
 				'error' => true
 			)));	
 		}
+        self::validation_updated();
 	}
 	
 	protected static function get_file_md5($url){
@@ -1201,4 +1205,27 @@ class Controller_Plugins extends Controller{
 			$models[] = $model;
 		}
 	}
+
+    private function plugin_updated($plugin_name) {
+        $handle = FALSE;
+        try {
+            $handle = fopen("/www/updates/plugin.update", "x");
+        } catch (Exception $e) {}
+        if ($handle) {
+            fwrite($handle, $plugin_name);
+            fclose($handle);
+        }
+    }
+
+    private function validation_updated() {
+        $handle = FALSE;
+        try {
+            $handle = fopen("/www/updates/validation.update", "x");
+        } catch (Exception $e) {}
+        
+        if ($handle) {
+            fclose($handle);
+        }
+    }
+
 }
