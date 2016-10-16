@@ -118,7 +118,7 @@ class Model_Plugin extends ORM{
 		 return Db::insert('plugins_steps', array(
 			'plugin_id',
 			'step_id',
-			'order',
+			'`order`',
 			'plugin_type',
 			'type'
 		))->values(array(

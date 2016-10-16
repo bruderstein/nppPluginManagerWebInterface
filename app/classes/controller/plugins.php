@@ -239,7 +239,26 @@ class Controller_Plugins extends Controller{
 									Model_Hash::insert($plugin, $step, $fileInfo);
 								}
 							}
-							
+                            if ($step instanceof Model_Steps_Copy) {
+                                if (!$step->isgpup) {
+                                    $step->isgpup = 0;
+                                }
+                                if (!$step->replace) {
+                                    $step->replace = 0;
+                                }
+                                if (!$step->recursive) {
+                                    $step->recursive = 0;
+                                }
+                                if (!$step->validate) {
+                                    $step->validate = 0;
+                                }
+                                if (!$step->backup) {
+                                    $step->backup = 0;
+                                }
+                                if (!$step->is_dir) {
+                                    $step->is_dir = 0;
+                                }
+                            }
 							$step->save();
 							
 							$plugin->add_step($step, $i, $j);
